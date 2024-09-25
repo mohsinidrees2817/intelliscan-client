@@ -1,9 +1,18 @@
-import NextAuth from "next-auth";
+import NextAuth, { User as NextAuthUser } from "next-auth";
 import { Account, User as AuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import User  from "@/models/User";
+import Users  from "@/models/User";
 import connect from "@/utils/mongoDB";
+
+interface User extends NextAuthUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  createdAt: Date;
+}
 
 const authOptions: any = {
   providers: [
@@ -17,14 +26,22 @@ const authOptions: any = {
       async authorize(credentials: any) {
         await connect();
         try {
-          const user = await Admin.findOne({ email: credentials.email });
+          const user = await Users.findOne({ email: credentials.email });
           if (user) {
             const isPasswordCorrect = await bcrypt.compare(
               credentials.password,
               user.password
             );
             if (isPasswordCorrect) {
-              return user;
+              const userObj: User = {
+                id: user._id.toString(),
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                password: user.password,
+                createdAt: user.createdAt,
+              };
+              return userObj;
             }
           }
         } catch (err: any) {

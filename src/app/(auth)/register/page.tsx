@@ -78,7 +78,7 @@ export default function Register() {
     <SlimLayout>
       <div className="flex">
         <Link href="/" aria-label="Home">
-          <Logo className="h-10 w-auto" />
+          <Logo />
         </Link>
       </div>
       <h2 className="mt-20 text-lg font-semibold text-gray-900">
