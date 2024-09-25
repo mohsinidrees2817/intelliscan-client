@@ -1,6 +1,8 @@
 import { type Metadata } from 'next'
 import { Inter, Lexend } from 'next/font/google'
 import clsx from 'clsx'
+import { getServerSession } from "next-auth";
+import SessionProvider from "@/utils/SessionProvider";
 
 import '@/styles/tailwind.css'
 
@@ -25,11 +27,13 @@ const lexend = Lexend({
   variable: '--font-lexend',
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await getServerSession();
+
   return (
     <html
       lang="en"
@@ -39,7 +43,11 @@ export default function RootLayout({
         lexend.variable,
       )}
     >
-      <body className="flex h-full flex-col">{children}</body>
+      <SessionProvider session={session}>
+
+        <body className="flex h-full flex-col">{children}</body>
+      </SessionProvider>
+
     </html>
   )
 }
